@@ -1,46 +1,35 @@
-var createError = require('http-errors');
-var express = require('express');
-var path = require('path');
-var cookieParser = require('cookie-parser');
-var logger = require('morgan');
+const express = require('express');
+const bodyParser = require('body-parser');
+const cors = require('cors');
 
-var usersRouter = require('./routes/index');
+// Import routes
+const userRoutes = require('./routes/index');
 
-var app = express();
 
-var mongoose = require("mongoose");
+const app = express();
 
-var mongoDB = "mongodb://mongodb:27017/users";
-mongoose.connect(mongoDB);
-var db = mongoose.connection;
-db.on("error", console.error.bind(console, "Erro de conexão ao MongoDB"));
-db.once("open", () => {
-  console.log("Conexão ao MongoDB realizada com sucesso");
+// Middleware
+//app.use(cors()); // Enable Cross-Origin Resource Sharing
+app.use(bodyParser.json()); // Parse JSON request bodies
+
+// API Routes
+app.use('/api/users', userRoutes); // Routes for managing projects
+
+// Default route for testing the server
+app.get('/', (req, res) => {
+  res.status(200).json({ message: 'Users Microservice is running!' });
 });
 
-
-app.use(logger('dev'));
-app.use(express.json());
-app.use(express.urlencoded({ extended: false }));
-app.use(cookieParser());
-app.use(express.static(path.join(__dirname, 'public')));
-
-app.use('/users', usersRouter);
-
-// catch 404 and forward to error handler
-app.use(function(req, res, next) {
-  next(createError(404));
+// Error handling middleware
+app.use((err, req, res, next) => {
+  console.error(err.stack);
+  res.status(500).json({ error: 'Something went wrong!' });
 });
 
-// error handler
-app.use(function(err, req, res, next) {
-  // set locals, only providing error in development
-  res.locals.message = err.message;
-  res.locals.error = req.app.get('env') === 'development' ? err : {};
-
-  // render the error page
-  res.status(err.status || 500);
-  res.render('error');
+// Start the server
+const PORT = process.env.PORT || 3000;
+app.listen(PORT, () => {
+  console.log(`Server is running on port ${PORT}`);
 });
 
 module.exports = app;

@@ -1,11 +1,20 @@
 // user.js - Controladores para operações dos utilizadores
 const bcrypt = require('bcrypt');
-const jwt = require('jsonwebtoken');
-const User = require('../models/user'); // Importar o modelo do utilizador
+const userService = require('../services/userService');
 
 // Registrar um novo utilizador
 module.exports.register = async (req, res) => {
     try {
+        const user = await userService.createUser(req.body);
+        res.status(201).json(user); // Return the created project
+      } catch (error) {
+        res.status(400).json({ error: error.message }); // Handle validation errors
+      }
+   
+   
+   
+   
+    /* try {
         const { _id, name, email, password, type } = req.body;
 
         // Verificar se o utilizador já existe
@@ -24,7 +33,7 @@ module.exports.register = async (req, res) => {
         res.status(201).json({ message: 'User registered with success!' });
     } catch (error) {
         res.status(500).json({ error: 'Error while creating new user', details: error.message });
-    }
+    }*/
 };
 
 // Login
@@ -33,7 +42,7 @@ module.exports.login = async (req, res) => {
         const { email, password } = req.body;
 
         // Procurar utilizador pelo email
-        const user = await User.findOne({ email });
+        const user = await userService.getUserByEmail(email);
         if (!user) {
             return res.status(404).json({ error: 'User not found' });
         }
@@ -45,7 +54,7 @@ module.exports.login = async (req, res) => {
         }
 
         // Gerar token JWT
-        const token = jwt.sign({ id: user._id, type: user.type }, 'secrect_key', { expiresIn: '1h' });
+        const token = jwt.sign({ id: user.id, type: user.type }, 'secrect_key', { expiresIn: '1h' });
 
         res.status(200).json({ message: 'Login with success', token });
     } catch (error) {
@@ -54,40 +63,35 @@ module.exports.login = async (req, res) => {
 };
 
 // Perfil do utilizador
-exports.profile = async (req, res) => {
+module.exports.getProfile = async (req, res) => {
     try {
-        const userId = req.user.id; // user.id vem do middleware de autenticação
-
-        const user = await User.findById(userId, '-password_hash'); // Excluir a palavra-passe do retorno
-        if (!user) {
-            return res.status(404).json({ error: 'User not found' });
-        }
-
-        res.status(200).json(user);
-    } catch (error) {
-        res.status(500).json({ error: 'Error finding the profile', details: error.message });
-    }
+        const user = await userService.getUser(req.params.id);
+        res.status(200).json(user); // Return the project
+      } catch (error) {
+        res.status(404).json({ error: error.message }); // Handle not found errors
+      }
 };
 
 // Editar perfil do utilizador
-exports.editProfile = async (req, res) => {
+module.exports.editProfile = async (req, res) => {
+
     try {
-        const userId = req.user.id; // user.id vem do middleware de autenticação
-        const { name, email, password } = req.body;
+        const user = await userService.updateProfile(req.params.id, req.body);
+        res.status(200).json(user); // Return the updated user
+      } catch (error) {
+        res.status(400).json({ error: error.message }); // Handle validation or not found errors
+      }
 
-        // Atualizar os dados
-        const updatedData = { name, email };
-        if (password) {
-            updatedData.password_hash = await bcrypt.hash(password, 10);
-        }
-
-        const updatedUser = await User.findByIdAndUpdate(userId, updatedData, { new: true });
-        if (!updatedUser) {
-            return res.status(404).json({ error: 'User not found' });
-        }
-
-        res.status(200).json({ message: 'Profile info updated with success', updatedUser });
-    } catch (error) {
-        res.status(500).json({ error: 'Error while updating the profile', details: error.message });
-    }
+    
 };
+
+module.exports.deleteProfile = async (req, res) => {
+    try {
+      const user = await userService.deleteProfile(req.params.id);
+      res.status(200).json(user); // Return the deleted project
+    } catch (error) {
+      res.status(404).json({ error: error.message }); // Handle not found errors
+    }
+  };
+  
+

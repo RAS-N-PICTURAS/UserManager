@@ -19,11 +19,11 @@ router.post('/login', userController.login);
  * @access Privado (requer autenticação)
 */
 
-router.post('/register', userController.register); // Create a new project
+router.post('/register', userController.register); // Create a new user
 router.post('/login', userController.login);
-router.get('/:id', userController.getProfile); // Get a project by ID
-router.put('/:id', userController.editProfile); // Update a project by ID
-router.delete('/:id', userController.deleteProfile); // Delete a project by ID
+router.get('/:id', userController.getProfile); // Get user by ID
+router.put('/:id', userController.editProfile); // Update profile
+router.delete('/:id', userController.deleteProfile); // Delete profile
 
 
 module.exports = router;

@@ -2,7 +2,9 @@ const bcrypt = require('bcryptjs'); // Para hash e comparação de senha
 const pool = require('../config/db');
 class User {
   static async create(data) {
+ 
     const { name, email, password_hash, type } = data;
+    console.log(data);
     const result = await pool.query(
       'INSERT INTO users (name, email, password_hash, type) VALUES ($1, $2, $3, $4) RETURNING *',
       [name, email, password_hash, type]
@@ -23,7 +25,7 @@ class User {
   static async update(id, data) {
     const { email } = data;
     const result = await pool.query(
-      'UPDATE users SET email = $1, updated_at = NOW() WHERE id = $2 RETURNING *',
+      'UPDATE users SET email = $1 WHERE id = $2 RETURNING *',
       [email, id]
     );
     return result.rows[0];

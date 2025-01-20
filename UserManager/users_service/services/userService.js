@@ -33,7 +33,14 @@ const getUserById = async (id) => {
 
 
   const createUser = async (data) => {
-    return await User.create(data);
+    console.log('Entrei');
+   /* console.log(email);
+    console.log(password_hash);*/
+    const user = await User.getByEmail(data.email);
+    if (user) {
+      throw new Error('Email already belongs to an account');
+    }
+      return await User.create(data);
   };
   
 

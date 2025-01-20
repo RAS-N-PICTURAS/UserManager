@@ -9,11 +9,11 @@ const userRoutes = require('./routes/index');
 const app = express();
 
 // Middleware
-//app.use(cors()); // Enable Cross-Origin Resource Sharing
+app.use(cors()); // Enable Cross-Origin Resource Sharing
 app.use(bodyParser.json()); // Parse JSON request bodies
 
 // API Routes
-app.use('/api/users', userRoutes); // Routes for managing projects
+app.use('/api/users', userRoutes); // Routes for managing users
 
 // Default route for testing the server
 app.get('/', (req, res) => {
@@ -27,9 +27,10 @@ app.use((err, req, res, next) => {
 });
 
 // Start the server
-const PORT = process.env.PORT || 3000;
+const PORT = process.env.PORT || 3002;
 app.listen(PORT, () => {
   console.log(`Server is running on port ${PORT}`);
 });
+
 
 module.exports = app;

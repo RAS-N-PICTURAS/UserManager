@@ -24,10 +24,10 @@ const User = require('./users_service/models/user'); // Import User model
 
     // Update the project
     const updatedUser = await User.update(newUser.id, { email: 'johndoe@gmail.com' });
-    console.log('Updated Project:', updatedUser);
+    console.log('Updated User', updatedUser);
 
     // Delete the project
- /*   const deletedUser = await Project.delete(newUser.id);
+   /* const deletedUser = await User.delete(newUser.id);
     console.log('Deleted User:', deletedUser);*/
 
 
